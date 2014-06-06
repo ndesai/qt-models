@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QJSEngine>
+#include <QStandardPaths>
 #include "definition.h"
 class SQLiteDatabase : public QObject
 {
@@ -24,7 +25,7 @@ class SQLiteDatabase : public QObject
 public:
     explicit SQLiteDatabase(QObject *parent = 0);
     ~SQLiteDatabase();
-    Q_INVOKABLE void executeQuery(QString queryString, QJSValue callbackFunction);
+    Q_INVOKABLE void executeQuery(QString queryString, QJSValue callbackFunction = QJSValue());
     QString source() const
     {
         return m_source;

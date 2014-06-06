@@ -1,0 +1,3 @@
+module st.app.models
+plugin ModelsPlugin
+classname ModelsPlugin

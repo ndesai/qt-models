@@ -26,6 +26,23 @@ Window {
             }
         }
     }
+
+    Rectangle {
+        width: parent.width
+        height: 100
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                _SQLiteDatabase.executeQuery("CREATE TABLE IF NOT EXISTS keystore (key varchar(180), value varchar(180))", function()
+                {
+                    _SQLiteDatabase.executeQuery("INSERT INTO keystore VALUES ('hellox', 'worldx')", function() { });
+                })
+            }
+        }
+        color: "green"
+        opacity: 0.25
+    }
+
     Rectangle {
         id: _Rect
         width: 100; height: 100;

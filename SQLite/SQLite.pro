@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += qml quick
 QT += sql
-
+QT += core
 SOURCES += main.cpp \
     sqlitedatabase.cpp
 

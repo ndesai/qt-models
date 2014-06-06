@@ -39,7 +39,6 @@ void SQLiteDatabase::openDatabase(QString source)
     {
         DEBUG << fullPath;
         DEBUG << "db doesn't exist. creating..";
-
     }
     m_database = QSqlDatabase::addDatabase(SQLITEDRIVER);
     m_database.setDatabaseName(fullPath);
@@ -69,7 +68,7 @@ void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction
     QJSValue resultsList = jsEngine->newArray();
     if (!query.exec())
     {
-        DEBUG << "query failed" << m_database.lastError().text();
+        DEBUG << "query failed" << query.lastError().text();
         status = false;
     }
     else
@@ -89,7 +88,6 @@ void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction
             resultsList.setProperty(index++, obj);
         }
     }
-
     if(callbackFunction.isCallable())
     {
         QJSValueList valueList;
