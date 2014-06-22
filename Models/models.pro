@@ -1,12 +1,15 @@
 TEMPLATE = lib
 TARGET = ModelsPlugin
 QT += qml quick sql core
-CONFIG += qt plugin static
+CONFIG += qt plugin
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = st.app.models
 
+ios {
 static: QMAKE_MOC_OPTIONS += -Muri=st.app.models
+CONFIG += static
+}
 
 # Input
 SOURCES += \
