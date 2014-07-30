@@ -26,6 +26,7 @@ public:
     explicit SQLiteDatabase(QObject *parent = 0);
     ~SQLiteDatabase();
     Q_INVOKABLE void executeQuery(QString queryString, QJSValue callbackFunction = QJSValue());
+    Q_INVOKABLE void executeQueriesFromFile(QString path);
     QString source() const
     {
         return m_source;
