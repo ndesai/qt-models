@@ -2,7 +2,7 @@
 #define DEFINITION_H
 #include <QCoreApplication>
 #include <QDir>
-#define DEBUG if(1) qDebug() << __PRETTY_FUNCTION__
+#define DEBUG if(0) qDebug() << __PRETTY_FUNCTION__
 #ifdef Q_OS_IOS
 #define BASEPATH QString(QStandardPaths::standardLocations(QStandardPaths::DataLocation).first() + QDir::separator())
 #else

@@ -19,48 +19,62 @@ void SQLiteDatabase::openDatabase(QString source)
 {
     if(source.isEmpty())
     {
-        DEBUG << "source is empty";
+        // DEBUG << "source is empty";
         return;
     }
     if(!m_database.isDriverAvailable(SQLITEDRIVER))
     {
-        DEBUG << SQLITEDRIVER << "is not available";
+        // DEBUG << SQLITEDRIVER << "is not available";
         return;
     }
     QString fullPath = BASEPATH + source;
     bool fullPathExists = QFile(fullPath).exists();
     if(m_readonly && !fullPathExists)
     {
-        DEBUG << fullPath;
-        DEBUG << "db doesn't exist. cannot continue with readonly as there is nothing to read";
+        // DEBUG << fullPath;
+        // DEBUG << "db doesn't exist. cannot continue with readonly as there is nothing to read";
         return;
     }
     if(!fullPathExists)
     {
-        DEBUG << fullPath;
-        DEBUG << "db doesn't exist. creating..";
+        // DEBUG << fullPath;
+        // DEBUG << "db doesn't exist. creating..";
     }
     m_database = QSqlDatabase::addDatabase(SQLITEDRIVER);
     m_database.setDatabaseName(fullPath);
     if(!m_database.isValid())
     {
-        DEBUG << SQLITEDRIVER << "database is not valid";
+        // DEBUG << SQLITEDRIVER << "database is not valid";
         return;
     }
     m_database.open();
     if(m_database.isOpen())
     {
-        DEBUG << "database is open";
+        // DEBUG << "database is open";
     }
     else
     {
-        DEBUG << "database is not open";
+        // DEBUG << "database is not open";
+    }
+}
+
+void SQLiteDatabase::closeDatabase()
+{
+    // DEBUG << "database is open?" << m_database.isOpen();
+    if(m_database.isOpen())
+    {
+        m_database.close();
     }
 }
 
 void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction)
 {
-    DEBUG << queryString;
+    if(!m_database.isOpen())
+    {
+        // DEBUG << "database is not open, attempting to open..";
+        m_database.open();
+    }
+    // DEBUG << queryString;
     QSqlQuery query(m_database);
     query.prepare(queryString);
     bool status;
@@ -68,13 +82,13 @@ void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction
     QJSValue resultsList = jsEngine->newArray();
     if (!query.exec())
     {
-        DEBUG << "query failed" << query.lastError().text();
+        // DEBUG << "query failed" << query.lastError().text();
         status = false;
     }
     else
     {
-        DEBUG << "query successful";
-        DEBUG << "last insert id " << query.lastInsertId();
+        // DEBUG << "query successful";
+        // DEBUG << "last insert id " << query.lastInsertId();
         status = true;
         int index = 0;
         while (query.next())
@@ -113,12 +127,12 @@ void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction
 
 void SQLiteDatabase::executeQueriesFromFile(QString path)
 {
-    DEBUG << path;
+    // DEBUG << path;
     QFile *file = new QFile(path);
     if(file->exists()
             && !file->open(QFile::ReadOnly | QFile::Text))
     {
-        DEBUG << "file could not be opened at path = " << path;
+        // DEBUG << "file could not be opened at path = " << path;
         return;
     }
     QSqlQuery query(m_database);
@@ -133,7 +147,7 @@ void SQLiteDatabase::executeQueriesFromFile(QString path)
         while(!finished)
         {
             readLine = file->readLine();
-            DEBUG << readLine;
+            // DEBUG << readLine;
             cleanedLine = readLine.trimmed();
             QStringList strings = cleanedLine.split("--");
             cleanedLine = strings.at(0);
@@ -159,10 +173,10 @@ void SQLiteDatabase::executeQueriesFromFile(QString path)
         }
         if(!query.isActive())
         {
-            DEBUG << QSqlDatabase::drivers();
-            DEBUG << query.lastError();
-            DEBUG << "Executed query:"<< query.executedQuery();
-            DEBUG << "Last query:"<< query.lastQuery();
+            // DEBUG << QSqlDatabase::drivers();
+            // DEBUG << query.lastError();
+            // DEBUG << "Executed query:"<< query.executedQuery();
+            // DEBUG << "Last query:"<< query.lastQuery();
         }
     }
 }
