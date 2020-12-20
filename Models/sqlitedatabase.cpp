@@ -51,6 +51,7 @@ void SQLiteDatabase::openDatabase(QString source)
     if(m_database.isOpen())
     {
         // DEBUG << "database is open";
+        databaseOpened();
     }
     else
     {

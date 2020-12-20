@@ -44,6 +44,8 @@ signals:
 
     void readonlyChanged(bool arg);
 
+    void databaseOpened();
+
 public slots:
 
     void setSource(QString arg)
