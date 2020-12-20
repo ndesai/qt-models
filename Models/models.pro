@@ -40,4 +40,10 @@ unix {
     target.path = $$installPath
     INSTALLS += target qmldir
 }
+osx {
+    installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
+    qmldir.path = $$installPath
+    target.path = $$installPath
+    INSTALLS += target qmldir
+}
 
