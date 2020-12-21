@@ -6,6 +6,7 @@
 void ModelsPlugin::registerTypes(const char *uri)
 {
     // @uri st.app.models
+    Q_INIT_RESOURCE(ModelsPlugin);
     qmlRegisterType<SQLiteDatabase>(uri, 1, 0, "SQLiteDatabase");
 }
 
