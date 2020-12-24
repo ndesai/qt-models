@@ -14,8 +14,8 @@ argparse "$@" <<EOF || exit 1
 parser.add_argument('-b', '--build-type', default='release', nargs='?',
                     choices=['debug', 'release'],
                     help='Build type')
-parser.add_argument('-p', '--platform', default='ios', nargs='?',
-                    choices=['ios', 'macos', "android"],
+parser.add_argument('-p', '--platform', default='ios-simulator', nargs='?',
+                    choices=['ios', 'ios-simulator', 'macos', "android"],
                     help='Build type')
 parser.add_argument('--qt', action='store', type=str, 
                     default="${DIR_QT}",
@@ -30,10 +30,14 @@ DIR_QT_clang64="${DIR_QT}/clang_64"
 CMD_QMAKE=""
 QMAKE_SPEC=""
 CMD_EXTRA=""
-if [[ "${PLATFORM}" == "ios" ]]; then
+if [[ "${PLATFORM}" == "ios-simulator" ]]; then
     CMD_QMAKE="${DIR_QT_ios}/bin/qmake"
     QMAKE_SPEC="macx-ios-clang"
     CMD_EXTRA="CONFIG+=iphonesimulator CONFIG+=simulator"
+elif [[ "${PLATFORM}" == "ios" ]]; then
+    CMD_QMAKE="${DIR_QT_ios}/bin/qmake"
+    QMAKE_SPEC="macx-ios-clang"
+    CMD_EXTRA="CONFIG+=iphoneos CONFIG+=device CONFIG+=qtquickcompiler"
 elif [[ "${PLATFORM}" == "macos" ]]; then
     CMD_QMAKE="${DIR_QT_clang64}/bin/qmake"
 fi
