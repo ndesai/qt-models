@@ -1,5 +1,4 @@
-#ifndef SQLITEDATABASE_H
-#define SQLITEDATABASE_H
+#pragma once
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -19,55 +18,29 @@ class SQLiteDatabase : public QObject
     Q_OBJECT
     Q_PROPERTY(QString source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(bool readonly READ readonly WRITE setReadonly NOTIFY readonlyChanged)
-    QString m_source;
-    bool m_readonly;
-
 public:
     explicit SQLiteDatabase(QObject *parent = 0);
     ~SQLiteDatabase();
     Q_INVOKABLE void executeQuery(QString queryString, QJSValue callbackFunction = QJSValue());
     Q_INVOKABLE void executeQueriesFromFile(QString path);
     Q_INVOKABLE void closeDatabase();
-    QString source() const
-    {
-        return m_source;
-    }
-
-    bool readonly() const
-    {
-        return m_readonly;
-    }
+    QString source() const;
+    bool readonly() const;
 
 signals:
-
     void sourceChanged(QString arg);
-
     void readonlyChanged(bool arg);
-
     void databaseOpened();
 
 public slots:
-
-    void setSource(QString arg)
-    {
-        if (m_source != arg) {
-            m_source = arg;
-            emit sourceChanged(arg);
-        }
-    }
-    void setReadonly(bool arg)
-    {
-        if (m_readonly != arg) {
-            m_readonly = arg;
-            emit readonlyChanged(arg);
-        }
-    }
+    void setSource(QString arg);
+    void setReadonly(bool arg);
 
 private slots:
-    void openDatabase(QString source);
+    void openDatabase();
 
 private:
     QSqlDatabase m_database;
+    QString m_source;
+    bool m_readonly;
 };
-
-#endif // SQLITEDATABASE_H

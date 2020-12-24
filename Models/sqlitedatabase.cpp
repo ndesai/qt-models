@@ -2,77 +2,136 @@
 
 SQLiteDatabase::SQLiteDatabase(QObject *parent) :
     QObject(parent),
+    m_database(QSqlDatabase()),
     m_source(""),
-    m_readonly(false),
-    m_database(QSqlDatabase())
+    m_readonly(false)
+
 {
     QObject::connect(this, SIGNAL(sourceChanged(QString)),
-                     this, SLOT(openDatabase(QString)));
+                     this, SLOT(openDatabase()));
 }
 
+/**
+ * @brief SQLiteDatabase::~SQLiteDatabase
+ */
 SQLiteDatabase::~SQLiteDatabase()
 {
     m_database.close();
 }
 
-void SQLiteDatabase::openDatabase(QString source)
+/**
+ * @brief SQLiteDatabase::openDatabase
+ * @param source
+ */
+void SQLiteDatabase::openDatabase()
 {
-    if(source.isEmpty())
+    if (m_source.isEmpty())
     {
-        // DEBUG << "source is empty";
+        DEBUG << "source is empty";
         return;
     }
-    if(!m_database.isDriverAvailable(SQLITEDRIVER))
+    if (!m_database.isDriverAvailable(SQLITEDRIVER))
     {
-        // DEBUG << SQLITEDRIVER << "is not available";
+        DEBUG << SQLITEDRIVER << "is not available";
         return;
     }
-    QString fullPath = BASEPATH + source;
+    QString fullPath = BASEPATH + m_source;
     bool fullPathExists = QFile(fullPath).exists();
-    if(m_readonly && !fullPathExists)
+    if (m_readonly && !fullPathExists)
     {
-        // DEBUG << fullPath;
-        // DEBUG << "db doesn't exist. cannot continue with readonly as there is nothing to read";
+        DEBUG << fullPath;
+        DEBUG << "db doesn't exist. cannot continue with readonly as there is nothing to read";
         return;
     }
-    if(!fullPathExists)
+    if (!fullPathExists)
     {
-        // DEBUG << fullPath;
-        // DEBUG << "db doesn't exist. creating..";
+        DEBUG << fullPath;
+        DEBUG << "db doesn't exist. creating..";
+        QDir().mkpath(BASEPATH);
     }
     m_database = QSqlDatabase::addDatabase(SQLITEDRIVER);
     m_database.setDatabaseName(fullPath);
-    if(!m_database.isValid())
+    if (!m_database.isValid())
     {
-        // DEBUG << SQLITEDRIVER << "database is not valid";
+        DEBUG << SQLITEDRIVER << "database is not valid";
         return;
     }
     m_database.open();
-    if(m_database.isOpen())
+    if (m_database.isOpen())
     {
-        // DEBUG << "database is open";
-        databaseOpened();
+        DEBUG << "database is open";
+        emit databaseOpened();
     }
     else
     {
-        // DEBUG << "database is not open";
+        DEBUG << "database is not open" << m_database.lastError();
     }
 }
 
+/**
+ * @brief SQLiteDatabase::closeDatabase
+ */
 void SQLiteDatabase::closeDatabase()
 {
-    // DEBUG << "database is open?" << m_database.isOpen();
-    if(m_database.isOpen())
+    DEBUG << "database is open?" << m_database.isOpen();
+    if (m_database.isOpen())
     {
         m_database.close();
     }
 }
 
+/**
+ * @brief SQLiteDatabase::source
+ * @return
+ */
+QString SQLiteDatabase::source() const
+{
+    return m_source;
+}
+
+/**
+ * @brief SQLiteDatabase::readonly
+ * @return
+ */
+bool SQLiteDatabase::readonly() const
+{
+    return m_readonly;
+}
+
+/**
+ * @brief SQLiteDatabase::setSource
+ * @param arg
+ */
+void SQLiteDatabase::setSource(QString arg)
+{
+    if (m_source != arg) {
+        m_source = arg;
+        emit sourceChanged(arg);
+    }
+}
+
+/**
+ * @brief SQLiteDatabase::setReadonly
+ * @param arg
+ */
+void SQLiteDatabase::setReadonly(bool arg)
+{
+    if (m_readonly != arg) {
+        m_readonly = arg;
+        emit readonlyChanged(arg);
+    }
+}
+
+/**
+ * @brief SQLiteDatabase::executeQuery
+ * @param queryString
+ * @param callbackFunction
+ */
 void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction)
 {
     if(!m_database.isOpen())
     {
-        // DEBUG << "database is not open, attempting to open..";
+        DEBUG << "database is not open, attempting to open..";
         m_database.open();
     }
     // DEBUG << queryString;
@@ -125,7 +184,6 @@ void SQLiteDatabase::executeQuery(QString queryString, QJSValue callbackFunction
 *
 * https://gist.github.com/savolai/6852986
 */
-
 void SQLiteDatabase::executeQueriesFromFile(QString path)
 {
     // DEBUG << path;
